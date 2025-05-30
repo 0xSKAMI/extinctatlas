@@ -1,26 +1,16 @@
 package main
 
 import (
-	// "context"
-	"fmt"
+	"log"
 	"net/http"
 
-	"extinctatlas/server/database"
+	"extinctatlas/server/handler"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
-}
-
 func main() {
-	http.HandleFunc("/", helloHandler)
+	const port = "8080"
 
-	// listen to port
-	http.ListenAndServe(":5050", nil)
+	http.HandleFunc("/extinctatlas/map", handler.HttpHandler)
 
-	var coll = database.Connect()
-
-	result := database.GetAdrr(coll)
-
-	fmt.Println(result)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

@@ -20,7 +20,7 @@ func Connect() mongo.Collection {
 		panic(err)
 	}
 
-	coll = client.Database("extictatlas").Collection("creatures")
+	coll = client.Database("extinctatlas").Collection("creatures")
 
 	return *coll
 }
