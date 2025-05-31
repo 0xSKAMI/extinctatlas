@@ -16,14 +16,14 @@ var coll = database.Connect()
 func MapHandler(w http.ResponseWriter, r *http.Request) {
 	// get all adresses and transform them to JSON bytes
 	var result = database.GetAdrr(coll)
-	test, err := json.Marshal(result)
+	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {
 		panic(err)
 	}
 
 	// return JSON andswer
-	fmt.Fprint(w, string(test))
+	fmt.Fprint(w, string(result2))
 }
 
 // function to return info about one creature
@@ -37,13 +37,13 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get info about one creature (using id) and transforming it to JSON bytes
-	var result = database.GetInfo(coll, "123")
-	test, err := json.Marshal(result)
+	var result = database.GetInfo(coll, pathArray[3])
+	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {
 		panic(err)
 	}
 
 	// return JSON format answer
-	fmt.Fprint(w, string(test))
+	fmt.Fprint(w, string(result2))
 }
