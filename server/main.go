@@ -14,6 +14,7 @@ func main() {
 	// creating handlers
 	http.HandleFunc("/extinctatlas/map", handler.MapHandler)
 	http.HandleFunc("/extinctatlas/info/", handler.InfoHandler)
+	http.HandleFunc("/extinctatlas/ai", handler.TestGem);
 
 	// start listening to port
 	log.Fatal(http.ListenAndServe(":"+port, nil))
