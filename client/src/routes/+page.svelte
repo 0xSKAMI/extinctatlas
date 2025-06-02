@@ -10,23 +10,33 @@
 	const coords = [[51.5, -0.09], [51.49, -0.08], [51.48, -0.08]] // Unused coordinates.
 	const coords2 = [[51.48, -0.09], [51.485, -0.112], [51.495, -0.115]] // Also unused coordinates.
 
-	function initMap(node:HTMLElement) {
+	async function initMap(node:HTMLElement) {
 		// Initializes map inside the given HTML 'node'.
-		const map = L.map(node).setView([51.485, -0.095], 13);
+		const map = L.map(node).setView([51.485, -0.095], 3);
 
 		// Adds OpenStreetMap base tiles to the map.
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
-		var polygon = L.polygon([
-			[51.509, -0.08],
-			[51.503, -0.06],
-			[51.51, -0.047]
-		]).addTo(map); // Draws a polygon on the map.
+		// var testing:L.LatLngExpression[] = [
+		// 	[51.509, -0.08],
+		// 	[51.503, -0.06],
+		// 	[51.51, -0.047]
+		// ]
 
-		polygon.bindPopup("Hello") // Adds "Hello" popup on polygon click.
+		// L.polygon(testing).addTo(map);
 	}
+
+	async function createPolygon() {
+    var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
+		console.log(coordinates.length)
+		for (let i = 0; i < coordinates.length; i++) {
+			console.log(coordinates[i].Coordinates)
+		}
+  }
+
+	createPolygon()
 </script>
 
 <div class="h-[100vh]" use:initMap></div>
