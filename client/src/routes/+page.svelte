@@ -10,6 +10,23 @@
 	const coords = [[51.5, -0.09], [51.49, -0.08], [51.48, -0.08]] // Unused coordinates.
 	const coords2 = [[51.48, -0.09], [51.485, -0.112], [51.495, -0.115]] // Also unused coordinates.
 
+	var cooResult:Array<L.LatLngExpression[]> = [];
+
+	async function getPolygonInfo():Promise<Array<L.LatLngExpression[]>> {
+    var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
+
+		for (let i = 0; i < coordinates.length; i++) {
+			let gatherer:L.LatLngExpression[] = []
+			for (let index = 0; index < coordinates[i].Coordinates.length; index++) {
+				gatherer.push([coordinates[i].Coordinates[index].Lat, coordinates[i].Coordinates[index].Lng])
+			}
+			cooResult.push(gatherer)
+		}
+		return cooResult
+  }
+	
+
+
 	async function initMap(node:HTMLElement) {
 		// Initializes map inside the given HTML 'node'.
 		const map = L.map(node).setView([51.485, -0.095], 3);
@@ -19,24 +36,17 @@
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
-		// var testing:L.LatLngExpression[] = [
-		// 	[51.509, -0.08],
-		// 	[51.503, -0.06],
-		// 	[51.51, -0.047]
-		// ]
-
-		// L.polygon(testing).addTo(map);
+		var testing:L.LatLngExpression[] = [
+			[51.509, -0.08],
+			[51.503, -0.06],
+			[51.51, -0.047]
+		]
+		await getPolygonInfo().then(res => {
+			cooResult.map(el => {
+				L.polygon(el).addTo(map);
+			})
+		})
 	}
-
-	async function createPolygon() {
-    var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
-		console.log(coordinates.length)
-		for (let i = 0; i < coordinates.length; i++) {
-			console.log(coordinates[i].Coordinates)
-		}
-  }
-
-	createPolygon()
 </script>
 
 <div class="h-[100vh]" use:initMap></div>
