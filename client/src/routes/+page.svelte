@@ -12,7 +12,7 @@
 
 	var cooResult:Array<L.LatLngExpression[]> = [];
 
-	async function getPolygonInfo():Promise<Array<L.LatLngExpression[]>> {
+	async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
     var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
 
 		for (let i = 0; i < coordinates.length; i++) {
@@ -22,8 +22,15 @@
 			}
 			cooResult.push(gatherer)
 		}
-		return cooResult
+		return [cooResult, coordinates]
   }
+
+	var info:object = {}
+
+	async function getInfo(id: string) {
+		info = await fetch('http://localhost:8080/extinctatlas/info/' + id).then(res => res.json())
+		console.log(info)
+	}
 	
 
 
@@ -41,12 +48,42 @@
 			[51.503, -0.06],
 			[51.51, -0.047]
 		]
-		await getPolygonInfo().then(res => {
-			cooResult.map(el => {
-				L.polygon(el).addTo(map);
+		await getPolygonInfo().then(([res, arr]) => {
+			cooResult.map((el, index) => {
+				L.polygon(el).addTo(map).addEventListener("click", async() => await getInfo(arr[index].ID));
 			})
 		})
 	}
 </script>
 
-<div class="h-[100vh]" use:initMap></div>
+<div class="flex">
+	{#if Object.keys(info).length > 0}
+	<div class="h-screen w-64 bg-slate-800 text-gray-200 p-6 shadow-lg flex flex-col space-y-4">
+		<button class="self-end px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm" onclick={() => {info = {}}}>close</button>
+		<img class="object-cover rounded-md self-center border-2 border-slate-600" src="{info.ImageURL}" alt="{info.Name}">
+		<div class="text-center">
+			<p class="text-xl font-semibold">{info.Name}</p>
+			<p class="text-sm text-gray-400">{info.Type}</p>
+		</div>
+		<div>
+			<p><span class="font-semibold text-gray-300">Reason of extinction:</span> {info.Reason}</p>
+			<p><span class="font-semibold text-gray-300">Last seen:</span> {info.LastSeen}</p>
+			<p><span class="font-semibold text-gray-300">Height:</span> {info.HeightCM}cm</p>
+			<p><span class="font-semibold text-gray-300">Weight:</span> {info.WeightKG}kg</p>
+			<p><span class="font-semibold text-gray-300">Diet: </span>
+			{#each info.Diet as meal}
+				{" " + meal}
+			{/each}</p>
+		</div>
+		<div class="mt-auto">
+			<input
+				class="bg-[#222630] px-4 py-3 outline-none w-full text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#596A95] border-[#2B3040]"
+				name="text"
+				placeholder="Ask ai"
+				type="text"
+			/>
+		</div>
+	</div>
+	{/if}
+	<div class="h-[100vh] w-screen" use:initMap></div>
+</div>
