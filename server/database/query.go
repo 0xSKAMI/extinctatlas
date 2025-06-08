@@ -15,7 +15,7 @@ import (
 // function to get all of the addresses in the db
 func GetAdrr(coll mongo.Collection) []models.Creature {
 	// getting all of the adresses in the db and saving them in data (encoded)
-	data, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"coordinates", 1}}))
+	data, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"coordinates", 1}, {"imageurl", 1}}))
 	// error handling
 	if err != nil {
 		panic(err)

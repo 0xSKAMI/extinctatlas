@@ -7,6 +7,7 @@
 
 <script lang="ts">
   import L from 'leaflet' // Imports Leaflet library as 'L'.
+	import { spring } from "svelte/motion"
 
 
   var info:object = {}
@@ -16,9 +17,7 @@
 	var response = "";
 	var loading = false 
 
-
   var cooResult:Array<L.LatLngExpression[]> = [];
-
 
   async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
     var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
@@ -57,7 +56,15 @@
 
     await getPolygonInfo().then(([res, arr]) => {
       cooResult.map((el, index) => {
-        L.polygon(el).addTo(map).addEventListener("click", async() => {await getInfo(arr[index].ID); id = arr[index].ID});
+				var polygon = L.polygon(el).addTo(map);
+				polygon.addEventListener("click", async() => {await getInfo(arr[index].ID); id = arr[index].ID; response = ""; aiResponding = false});
+				polygon.bindPopup('<div class="w-48 font-sans antialiased">' + '<img class="w-full rounded-lg object-cover shadow-sm mb-2" src="' + arr[index].ImageURL + '"/>' + '<p class="text-center text-sm font-semibold text-slate-700 leading-tight break-words px-2 py-1">' + arr[index].Name + '</p>' + '</div>');
+				polygon.on("mouseover", (e) => {
+					polygon.openPopup();
+				})
+				polygon.on("mouseout", (e) => {
+					polygon.closePopup();
+				})
       })
     })
   }
