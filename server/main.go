@@ -3,15 +3,18 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"extinctatlas/server/handler"
 
 	"github.com/rs/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	// declaring port
-	const port = "8080"
+	godotenv.Load()
+	var port string = os.Getenv("PORT")
 
 	c := cors.New(cors.Options{
     AllowedOrigins:   []string{"http://localhost:5173"},
