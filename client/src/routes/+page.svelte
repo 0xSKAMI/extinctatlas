@@ -20,7 +20,7 @@
   var cooResult:Array<L.LatLngExpression[]> = [];
 
   async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
-    var coordinates = await fetch("http://localhost:8080/extinctatlas/map").then(res => res.json())
+    var coordinates = await fetch("https://extinctatlas.duckdns.org/extinctatlas/map").then(res => res.json())
 
 
     for (let i = 0; i < coordinates.length; i++) {
@@ -35,12 +35,12 @@
 
 
   async function getInfo(id: string) {
-    info = await fetch('http://localhost:8080/extinctatlas/info/' + id).then(res => res.json())
+    info = await fetch('https://extinctatlas.duckdns.org/extinctatlas/info/' + id).then(res => res.json())
   }
  
   async function getAiResponse(prompt: string, id: string) {
 		loading = true;
-		await fetch('http://localhost:8080/extinctatlas/ai?id='+id+'&prompt='+prompt).then(res => res.text()).then(res => {response = res; loading = false})
+		await fetch('https://extinctatlas.duckdns.org/extinctatlas/ai?id='+id+'&prompt='+prompt).then(res => res.text()).then(res => {response = res; loading = false})
   }
 
 
