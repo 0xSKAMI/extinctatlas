@@ -17,7 +17,7 @@ func main() {
 	var port string = os.Getenv("PORT")
 
 	c := cors.New(cors.Options{
-    AllowedOrigins:   []string{"http://localhost:5173"},
+    AllowedOrigins:   []string{"https://extinctatlas.netlify.app", "https://somethingtesting.duckdns.org", "http://localhost:5173"},
     AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete},
     AllowCredentials: true,
 	})
