@@ -15,7 +15,8 @@ type Creature struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	Name        string
 	Type        string
-	LastSeen    string
+	FirstSeen 	int
+	LastSeen   	int 
 	Reason      string
 	HeightCM    int
 	WeightKG    float64

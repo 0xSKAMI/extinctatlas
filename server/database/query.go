@@ -13,7 +13,7 @@ import (
 )
 
 // function to get all of the addresses in the db
-func GetAdrr(coll mongo.Collection) []models.Creature {
+func GetAdrrCreatures(coll mongo.Collection) []models.Creature {
 	// getting all of the adresses in the db and saving them in data (encoded)
 	data, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"coordinates", 1}, {"imageurl", 1}}))
 	// error handling
@@ -35,7 +35,7 @@ func GetAdrr(coll mongo.Collection) []models.Creature {
 }
 
 // function to get information about one creatur
-func GetInfo(coll mongo.Collection, ID string) models.Creature {
+func GetInfoCreatures(coll mongo.Collection, ID string) models.Creature {
 	//transforming ID string to objectid
 	_id, err := primitive.ObjectIDFromHex(ID);
 	// getting encoded information, decode it and save it in data
@@ -51,8 +51,4 @@ func GetInfo(coll mongo.Collection, ID string) models.Creature {
 
 	// create result variable and save array of decoded info in it
 	return result 
-}
-
-// it does not serve any purpose for now
-func getIMG() {
 }

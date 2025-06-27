@@ -11,7 +11,6 @@
 	import { spring, tweened } from "svelte/motion"
 
 	const mouseCoords = spring({ x: 0, y: 0 })
-	const scale = tweened(1, { duration: 100 })
 
 	const onMouseMove = (event) => {
 		$mouseCoords = { x: event.x, y: event.y }
@@ -32,7 +31,6 @@
 
   async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
     var coordinates = await fetch("https://extinctatlas.duckdns.org/extinctatlas/map").then(res => res.json())
-
 
     for (let i = 0; i < coordinates.length; i++) {
       let gatherer:L.LatLngExpression[] = []
@@ -58,7 +56,6 @@
   async function getAiQuesions(animal_id: string) {
 		loading = true;
 		await fetch('https://extinctatlas.duckdns.org/extinctatlas/ai/generate?id='+animal_id).then(res => res.text()).then(res_text => questions = res_text.split("/"))
-    console.log(questions)
   }
 
 

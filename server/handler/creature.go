@@ -9,13 +9,13 @@ import (
 	"extinctatlas/server/database"
 )
 
-// calling function to have database connection
-var coll = database.Connect()
 
 // function to return map parameters
 func MapHandler(w http.ResponseWriter, r *http.Request) {
+	// calling function to have database connection
+	var coll = database.Connect("creatures");
 	// get all adresses and transform them to JSON bytes
-	var result = database.GetAdrr(coll)
+	var result = database.GetAdrrCreatures(coll)
 	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {
@@ -28,6 +28,8 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 
 // function to return info about one creature
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
+	// calling function to have database connection
+	var coll = database.Connect("creatures");
 	// get url and extract id from it
 	basePath := r.URL.Path
 	pathArray := strings.Split(basePath, "/")	
@@ -37,7 +39,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get info about one creature (using id) and transforming it to JSON bytes
-	var result = database.GetInfo(coll, pathArray[3])
+	var result = database.GetInfoCreatures(coll, pathArray[3])
 	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 var coll *mongo.Collection
 
 // function to connect to database
-func Connect() mongo.Collection {
+func Connect(conn string) mongo.Collection {
 	// get env variable and using it connect to database
 	godotenv.Load()
 	var password string = os.Getenv("PASSWORD")
@@ -22,7 +22,7 @@ func Connect() mongo.Collection {
 	}
 
 	// creating coll (collection) variable to manage creatures collection
-	coll = client.Database("extinctatlas").Collection("creatures")
+	coll = client.Database("extinctatlas").Collection(conn)
 
 	// return coll pointer
 	return *coll
