@@ -9,6 +9,7 @@
   import L from 'leaflet'
   import { fly } from "svelte/transition";
 	import { spring, tweened } from "svelte/motion"
+	import { PUBLIC_ADDRESS } from "$env/static/public";
 
 	const mouseCoords = spring({ x: 0, y: 0 })
 
@@ -30,7 +31,7 @@
   var cooResult:Array<L.LatLngExpression[]> = [];
 
   async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
-    var coordinates = await fetch("https://extinctatlas.duckdns.org/extinctatlas/map").then(res => res.json())
+    var coordinates = await fetch(PUBLIC_ADDRESS + "/map").then(res => res.json())
 
     for (let i = 0; i < coordinates.length; i++) {
       let gatherer:L.LatLngExpression[] = []
@@ -44,18 +45,18 @@
 
 
   async function getInfo(id_param: string) {
-    info = await fetch('https://extinctatlas.duckdns.org/extinctatlas/info/' + id_param).then(res => res.json())
+    info = await fetch(PUBLIC_ADDRESS+'/info/' + id_param).then(res => res.json())
     id = id_param;
   }
 
   async function getAiResponse(prompt: string, animal_id: string) {
 		loading = true;
-		await fetch('https://extinctatlas.duckdns.org/extinctatlas/ai?id='+animal_id+'&prompt='+prompt).then(res => res.text()).then(res_text => {response = res_text; loading = false})
+		await fetch(PUBLIC_ADDRESS+'/ai?id='+animal_id+'&prompt='+prompt).then(res => res.text()).then(res_text => {response = res_text; loading = false})
   }
   
   async function getAiQuesions(animal_id: string) {
 		loading = true;
-		await fetch('https://extinctatlas.duckdns.org/extinctatlas/ai/generate?id='+animal_id).then(res => res.text()).then(res_text => questions = res_text.split("/"))
+		await fetch(PUBLIC_ADDRESS+'/ai/generate?id='+animal_id).then(res => res.text()).then(res_text => questions = res_text.split("/"))
   }
 
 
@@ -89,7 +90,7 @@
 />
 
 <div style:--x={`${$mouseCoords.x}px`} style:--y={`${$mouseCoords.y - 100}px`} style:opacity={popupOpacity / 100} class="absolute top-0 left-0 w-[10vh] z-[999] transform translate-x-[calc(-50%_+_var(--x,_0px))] translate-y-[calc(-50%_+_var(--y,_0px))] scale-[var(--scale,1)] pointer-events-none bg-white p-2 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 flex flex-col items-center transition-opacity duration-300 ease-in-out">
-	<img class="w-full rounded-lg object-cover shadow-sm mb-2" src={popupImgUrl}/>
+	<img class="w-full rounded-lg object-cover shadow-sm mb-2" alt="animal" src={popupImgUrl}/>
 	<p class="text-center text-xs font-semibold text-slate-700 leading-tight break-words px-1 py-0.5"> {popupName} </p>
 </div>
 
