@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"errors"
 
 	"extinctatlas/server/models"
 
@@ -13,29 +14,31 @@ import (
 )
 
 // function to get all of the addresses in the db
-func GetAdrrCreatures(coll mongo.Collection) []models.Creature {
+func GetAdrrCreatures(coll mongo.Collection) ([]models.Creature, error) {
+	// creating result (value we return) and saving decoded data there
+	var result []models.Creature
+
 	// getting all of the adresses in the db and saving them in data (encoded)
 	data, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"coordinates", 1}, {"imageurl", 1}}))
 	// error handling
 	if err != nil {
-		panic(err)
+		log.Println("problem with query: %v", err);
+		return result, errors.New("problem with query");
 	}
 
-	// creating result (value we return) and saving decoded data there
-	var result []models.Creature
 	err = data.All(context.TODO(), &result)
 	// error handling 
 	if (err != nil) {
-		fmt.Println(err)
-		panic(err)
+		log.Println("problem with tranforming addresses into json: %v", err);
+		return result, errors.New("problem with query");
 	}
 	
 	// return result
-	return result
+	return result, nil
 }
 
 // function to get information about one creatur
-func GetInfoCreatures(coll mongo.Collection, ID string) models.Creature {
+func GetInfoCreatures(coll mongo.Collection, ID string) (models.Creature, error) {
 	//transforming ID string to objectid
 	_id, err := primitive.ObjectIDFromHex(ID);
 	// getting encoded information, decode it and save it in data
@@ -44,11 +47,11 @@ func GetInfoCreatures(coll mongo.Collection, ID string) models.Creature {
 	// error handling
 	if err != nil {
 		if (err == mongo.ErrNoDocuments) {
-			fmt.Println("no docs found");
 		}
-		panic(err)
+		log.Println("GetInfoCreatures: %v", err);
+		return result, errors.New("getting creature info");
 	}
 
 	// create result variable and save array of decoded info in it
-	return result 
+	return result, nil;
 }

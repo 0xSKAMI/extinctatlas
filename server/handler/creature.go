@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -13,13 +14,26 @@ import (
 // function to return map parameters
 func MapHandler(w http.ResponseWriter, r *http.Request) {
 	// calling function to have database connection
-	var coll = database.Connect("creatures");
+	var coll, err = database.Connect("creatures");
+	//error handling for connection
+	if err != nil {
+		log.Printf("MapHandler: db connect error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	// get all adresses and transform them to JSON bytes
-	var result = database.GetAdrrCreatures(coll)
+	result, err := database.GetAdrrCreatures(coll)
+	//error handling for address query
+	if err != nil {
+		log.Printf("MapHandler: db query error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {
-		panic(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	// return JSON andswer
@@ -29,7 +43,13 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 // function to return info about one creature
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	// calling function to have database connection
-	var coll = database.Connect("creatures");
+	var coll, err = database.Connect("creatures");
+	//error handling for connection
+	if err != nil {
+		log.Printf("InfoHandler: db connect error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	// get url and extract id from it
 	basePath := r.URL.Path
 	pathArray := strings.Split(basePath, "/")	
@@ -39,11 +59,19 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get info about one creature (using id) and transforming it to JSON bytes
-	var result = database.GetInfoCreatures(coll, pathArray[3])
+	result, err := database.GetInfoCreatures(coll, pathArray[3])
+	//error handling for query 
+	if err != nil {
+		log.Printf("InfoHandler: db query error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	result2, err := json.Marshal(result)
 	// error handling
 	if err != nil {
-		panic(err)
+		log.Printf("InfoHandler: response encode error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	// return JSON format answer
