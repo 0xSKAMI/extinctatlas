@@ -1,3 +1,4 @@
+<!-- for leaflet js -->
 <svelte:head>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -5,10 +6,15 @@
 </svelte:head>
 
 
+<!-- starting of typescript part -->
 <script lang="ts">
+	//importing leaflet
   import L from 'leaflet'
+	//for animations
   import { fly } from "svelte/transition";
+	//for animations
 	import { spring, tweened } from "svelte/motion"
+	//for .env
 	import { PUBLIC_ADDRESS } from "$env/static/public";
 
 	const mouseCoords = spring({ x: 0, y: 0 })
@@ -30,56 +36,72 @@
 
   var cooResult:Array<L.LatLngExpression[]> = [];
 
+	//function fo get polygon coordinates
   async function getPolygonInfo():Promise<[Array<L.LatLngExpression[]>, Array<object>]> {
+		//calling api enpoint and turniong result in json
     var coordinates = await fetch(PUBLIC_ADDRESS + "/map").then(res => res.json())
 
+		//doing loop to to create array of points
     for (let i = 0; i < coordinates.length; i++) {
-      let gatherer:L.LatLngExpression[] = []
-      for (let index = 0; index < coordinates[i].Coordinates.length; index++) {
-        gatherer.push([coordinates[i].Coordinates[index].Lat, coordinates[i].Coordinates[index].Lng])
-      }
-      cooResult.push(gatherer)
+      cooResult.push(coordinates[i].Polygon.coordinates)
     }
     return [cooResult, coordinates]
   }
 
 
+	//function to get info about single animal
   async function getInfo(id_param: string) {
     info = await fetch(PUBLIC_ADDRESS+'/info/' + id_param).then(res => res.json())
     id = id_param;
   }
 
+	//function to ai answer to question 
   async function getAiResponse(prompt: string, animal_id: string) {
 		loading = true;
 		await fetch(PUBLIC_ADDRESS+'/ai?id='+animal_id+'&prompt='+prompt).then(res => res.text()).then(res_text => {response = res_text; loading = false})
   }
   
+	//function to AI generated example questions
   async function getAiQuesions(animal_id: string) {
 		loading = true;
 		await fetch(PUBLIC_ADDRESS+'/ai/generate?id='+animal_id).then(res => res.text()).then(res_text => questions = res_text.split("/"))
   }
 
-
+	//funciton to generate map and map content
   async function initMap(node:HTMLElement) {
+		//declare map and set starting point
     const map = L.map(node).setView([51.485, -0.095], 3);
 
-
+		//configure map basically 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+		//getting polygon coordinates and appying them to map
     await getPolygonInfo().then(([res, arr]) => {
-      cooResult.map((el, index) => {
-				var polygon = L.polygon(el).addTo(map);
-				polygon.addEventListener("click", async() => {await getInfo(arr[index].ID); await getAiQuesions(arr[index].ID); response = ""; aiResponding = false});
-				polygon.on("mouseover", (e) => {
-					popupImgUrl = arr[index].ImageURL;
-					popupName = arr[index].Name;
-					popupOpacity = 100;
-				})
-				polygon.on("mouseout", (e) => {
-					popupOpacity = 0;
-				})
+				cooResult.map((el, index) => {
+					var polygon = [{
+						"type": "Feature",
+						"properties": {"name": "animal", "image": arr[index].ImageURL},
+						"geometry": {
+								"type": "Polygon",
+								"coordinates": 
+									el
+						}
+				}];
+				L.geoJSON(polygon, {
+					onEachFeature: function(feature, layer) {
+						layer.addEventListener("click", async() => {await getInfo(arr[index].ID); await getAiQuesions(arr[index].ID); response = ""; aiResponding = false});
+						layer.on("mouseover", (e) => {
+							popupImgUrl = arr[index].ImageURL;
+							popupName = arr[index].Name;
+							popupOpacity = 100;
+						})
+						layer.on("mouseout", (e) => {
+							popupOpacity = 0;
+						})
+					}
+				}).addTo(map);
       })
     })
   }
