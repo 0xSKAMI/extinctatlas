@@ -86,6 +86,11 @@
         ```bash
         npm install
         ```
+    *   Create a `.env` file in the `client` directory with the following content:
+        ```env
+        # The address where your Go backend is running
+        PUBLIC_ADDRESS="http://localhost:8080"
+        ```
     *   **IMPORTANT for Local Development:**
         Your Svelte code may be configured to fetch data from the production URL. For local development, you must update the `fetch` URLs in your Svelte components to point to your local Go server.
         
