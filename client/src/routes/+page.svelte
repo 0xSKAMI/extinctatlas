@@ -80,28 +80,33 @@
 		//getting polygon coordinates and appying them to map
     await getPolygonInfo().then(([res, arr]) => {
 				cooResult.map((el, index) => {
-					var polygon = [{
-						"type": "Feature",
-						"properties": {"name": "animal", "image": arr[index].ImageURL},
-						"geometry": {
-								"type": "Polygon",
-								"coordinates": 
-									el
-						}
-				}];
-				L.geoJSON(polygon, {
-					onEachFeature: function(feature, layer) {
-						layer.addEventListener("click", async() => {await getInfo(arr[index].ID); await getAiQuesions(arr[index].ID); response = ""; aiResponding = false});
-						layer.on("mouseover", (e) => {
-							popupImgUrl = arr[index].ImageURL;
-							popupName = arr[index].Name;
-							popupOpacity = 100;
-						})
-						layer.on("mouseout", (e) => {
-							popupOpacity = 0;
-						})
+					try {
+						var polygon = [{
+							"type": "Feature",
+							"properties": {"name": "animal", "image": arr[index].ImageURL},
+							"geometry": {
+									"type": arr[index].Polygon.type,
+									"coordinates": 
+										el
+							}
+						}];
+						L.geoJSON(polygon, {
+							onEachFeature: function(feature, layer) {
+								layer.addEventListener("click", async() => {await getInfo(arr[index].ID); await getAiQuesions(arr[index].ID); response = ""; aiResponding = false});
+								layer.on("mouseover", (e) => {
+									popupImgUrl = arr[index].ImageURL;
+									popupName = arr[index].Name;
+									popupOpacity = 100;
+								})
+								layer.on("mouseout", (e) => {
+									popupOpacity = 0;
+								})
+							}
+						}).addTo(map);
 					}
-				}).addTo(map);
+					catch(err) {
+						console.log(err)
+					}
       })
     })
   }
