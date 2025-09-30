@@ -11,8 +11,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var Collection string 
-
 func main() {
 	// declaring port
 	godotenv.Load()
