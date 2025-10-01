@@ -14,15 +14,18 @@ import (
 // function to return map parameters
 func MapHandler(w http.ResponseWriter, r *http.Request) {
 	// calling function to have database connection
-	var coll, err = database.Connect("creatures");
+	var client, err = database.Connect();
 	//error handling for connection
 	if err != nil {
 		log.Printf("MapHandler: db connect error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	// creating coll (collection) variable to manage creatures collection
+	var coll = client.Database("extinctatlas").Collection("creatures")
+
 	// get all adresses and transform them to JSON bytes
-	result, err := database.GetAdrrCreatures(coll)
+	result, err := database.GetAdrrCreatures(*coll)
 	//error handling for address query
 	if err != nil {
 		log.Printf("MapHandler: db query error: %v", err)
@@ -43,13 +46,16 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 // function to return info about one creature
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	// calling function to have database connection
-	var coll, err = database.Connect("creatures");
+	var client, err = database.Connect();
 	//error handling for connection
 	if err != nil {
 		log.Printf("InfoHandler: db connect error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	// creating coll (collection) variable to manage creatures collection
+	var coll = client.Database("extinctatlas").Collection("creatures")
+
 	// get url and extract id from it
 	basePath := r.URL.Path
 	pathArray := strings.Split(basePath, "/")	
@@ -59,7 +65,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get info about one creature (using id) and transforming it to JSON bytes
-	result, err := database.GetInfoCreatures(coll, pathArray[3])
+	result, err := database.GetInfoCreatures(*coll, pathArray[3])
 	//error handling for query 
 	if err != nil {
 		log.Printf("InfoHandler: db query error: %v", err)
