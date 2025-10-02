@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"context"
 
 	"extinctatlas/server/database"
 )
@@ -19,6 +20,7 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("MapHandler: db connect error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		client.Disconnect(context.TODO())
 		return
 	}
 	// creating coll (collection) variable to manage creatures collection
@@ -26,6 +28,9 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 
 	// get all adresses and transform them to JSON bytes
 	result, err := database.GetAdrrCreatures(*coll)
+	//error handling for query 
+	client.Disconnect(context.TODO())
+
 	//error handling for address query
 	if err != nil {
 		log.Printf("MapHandler: db query error: %v", err)
@@ -38,7 +43,7 @@ func MapHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
+	
 	// return JSON andswer
 	fmt.Fprint(w, string(result2))
 }
@@ -51,6 +56,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("InfoHandler: db connect error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		client.Disconnect(context.TODO())
 		return
 	}
 	// creating coll (collection) variable to manage creatures collection
@@ -63,9 +69,11 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	if len(pathArray) > 3 {
 		http.NotFoundHandler()
 	}
-
 	// get info about one creature (using id) and transforming it to JSON bytes
 	result, err := database.GetInfoCreatures(*coll, pathArray[3])
+	//close connection
+	client.Disconnect(context.TODO())
+
 	//error handling for query 
 	if err != nil {
 		log.Printf("InfoHandler: db query error: %v", err)

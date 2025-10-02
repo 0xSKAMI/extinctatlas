@@ -40,7 +40,8 @@ func GenAnswer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	info, err := database.GetInfoCreatures(*coll, r.URL.Query().Get("id"))
-	//error handling for query 
+	//close connection
+	client.Disconnect(context.TODO())
 	if err != nil {
 		log.Printf("GetAnswer: db query error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -93,6 +94,8 @@ func GenQuesions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	info, err := database.GetInfoCreatures(*coll, r.URL.Query().Get("id"))
+	//close connection
+	client.Disconnect(context.TODO())
 	//error handling for query 
 	if err != nil {
 		log.Printf("GenQeustions: db query error: %v", err)
