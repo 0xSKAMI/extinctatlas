@@ -63,10 +63,13 @@
         # Your full MongoDB connection string
         MONGO_URI="your_mongodb_connection_string"
 
+	# Your password
+	PASSWORD="password for mongodb"
+
         # Port for the Go backend server (e.g., 8080)
         PORT="8080"
         ```
-        > **Note**: It's common practice to use a full `MONGO_URI` connection string for flexibility. If your code specifically requires a `PASSWORD` variable, adjust the `.env` and your Go code accordingly.
+        > **Note**: It's common practice to use a full `MONGO_URI` connection string for flexibility. But this code is using 2 strings, password and link so if you want to use full "MONGO_URI" modify code accordingly
     *   Ensure Go dependencies are installed:
         ```bash
         go mod tidy
