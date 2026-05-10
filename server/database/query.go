@@ -43,7 +43,10 @@ func GetInfoCreatures(coll mongo.Collection, ID string) (models.Creature, error)
 	_id, err := primitive.ObjectIDFromHex(ID);
 	// getting encoded information, decode it and save it in data
 	var result models.Creature;
-	err = coll.FindOne(context.TODO(), bson.D{{"_id", _id}}).Decode(&result);
+	//settig options to not return polygon (takes so much time and bandwidth)
+	opts := options.FindOne().SetProjection(bson.D{{"polygon", 0}});
+	
+	err = coll.FindOne(context.TODO(), bson.D{{"_id", _id}}, opts).Decode(&result);
 	// error handling
 	if err != nil {
 		if (err == mongo.ErrNoDocuments) {
